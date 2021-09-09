@@ -5,13 +5,14 @@
       "VpcId": {
          "Description": "VPC id",
          "Type": "AWS::EC2::VPC::Id",
-         "Default": "vpc-0c101c250ca3f9b4b"
+         "Default": "vpc-0d8460217b5ebd713"
       },
       "SubnetId1": {
          "Description": "Subnet Id where instance will create",
          "Type": "AWS::EC2::Subnet::Id",
-         "Default": "subnet-0b29559d0f2b39f4a"
+         "Default": "subnet-0a6c4327b834ad857"
       },
+
       "InstanceType": {
          "Description": "WebServer EC2 instance type",
          "Type": "String",
@@ -36,6 +37,65 @@
       }
    },
    "Resources": {
+
+      "WebServerGroup" : {
+         "Type" : "AWS::AutoScaling::AutoScalingGroup",
+         "Properties" : {
+           "AvailabilityZones" : { "Fn::GetAZs" : ""},
+           "LaunchConfigurationName" : { "Ref" : "LaunchConfig" },
+           "MinSize" : "1",
+           "DesiredCapacity" :"2",
+           "MaxSize" : "3",
+           "LoadBalancerNames" : [ { "Ref" : "ElasticLoadBalancer" } ]
+         }
+       },
+
+      "LaunchConfig" : {
+         "Type" : "AWS::AutoScaling::LaunchConfiguration",
+         "Properties" : {
+           "ImageId" : {"Ref":"LatestAmiId"},
+           "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+           "InstanceType" : { "Ref" : "InstanceType" }
+         }
+       },
+
+      "WebServerScaleUpPolicy" : {
+         "Type" : "AWS::AutoScaling::ScalingPolicy",
+         "Properties" : {
+            "AdjustmentType" : "ChangeInCapacity",
+            "AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
+            "Cooldown" : "60",
+            "ScalingAdjustment" : "1"
+         }
+      },
+      "WebServerScaleDownPolicy" : {
+         "Type" : "AWS::AutoScaling::ScalingPolicy",
+         "Properties" : {
+         "AdjustmentType" : "ChangeInCapacity",
+         "AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
+         "Cooldown" : "60",
+         "ScalingAdjustment" : "-1"
+         }
+      },
+      "ElasticLoadBalancer" : {
+         "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+         "Properties" : {
+         "AvailabilityZones" : { "Fn::GetAZs" : "" },
+         "CrossZone" : "true",
+         "Listeners" : [ {
+            "LoadBalancerPort" : "80",
+            "InstancePort" : "80",
+            "Protocol" : "HTTP"
+         } ],
+         "HealthCheck" : {
+            "Target" : "HTTP:80/",
+            "HealthyThreshold" : "3",
+            "UnhealthyThreshold" : "5",
+            "Interval" : "30",
+            "Timeout" : "5"
+         }
+         }
+      },      
       "InstanceSecurityGroup": {
          "Type": "AWS::EC2::SecurityGroup",
          "Properties": {
@@ -56,23 +116,12 @@
                }
             ]
          }
-      },
-      "EC2Instance": {
-         "Type": "AWS::EC2::Instance",
-         "Properties": {
-            "InstanceType": {"Ref":"InstanceType"},
-            "SecurityGroupIds": [
-               {"Ref":"InstanceSecurityGroup"}
-            ],
-            "ImageId": {"Ref":"LatestAmiId"},
-            "SubnetId": {"Ref":"SubnetId1"}
-         }
       }
    },
    "Outputs": {
-      "InstanceId": {
-         "Description": "InstanceId of the newly created EC2 instance",
-         "Value": {"Ref":"EC2Instance"}
+    "URL" : {
+      "Description" : "The URL of the website",
+      "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "ElasticLoadBalancer", "DNSName" ]}]]}
       }
    }
 }
