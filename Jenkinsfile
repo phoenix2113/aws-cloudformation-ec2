@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label "EC2-LAUNCH-JENKINS"
-    }
+    agent any
     parameters {
         string(name: 'VPC_ID', defaultValue: 'vpc-0d8460217b5ebd713', description: 'VPC id')
         string(name: 'INSTANCE_TYPE', defaultValue: 't2.micro', description: 'WebServer EC2 instance type')
