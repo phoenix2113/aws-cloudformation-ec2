@@ -7,11 +7,6 @@
          "Type": "AWS::EC2::VPC::Id",
          "Default": "vpc-0d8460217b5ebd713"
       },
-      "SubnetId1": {
-         "Description": "Subnet Id where instance will create",
-         "Type": "AWS::EC2::Subnet::Id",
-         "Default": "subnet-0a6c4327b834ad857"
-      },
 
       "InstanceType": {
          "Description": "WebServer EC2 instance type",
