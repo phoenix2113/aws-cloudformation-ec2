@@ -7,12 +7,12 @@ pipeline {
 
     
     stages("Create ec2 Instance") {
-        when{
-            expression{
-                currentBuild.result == null || currentBuild.result == 'SUCCESS'
-            }
-        }
         stage('STEP 1: Create Iam Role') {
+            when{
+                expression{
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
             steps {
                sh """
                set +x
