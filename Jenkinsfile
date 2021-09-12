@@ -7,12 +7,17 @@ pipeline {
 
     
     stages("Create ec2 Instance") {
+        when{
+            expression{
+                currentBuild.result == null || currentBuild.result == 'SUCCESS'
+            }
+        }
         stage('STEP 1: Create Iam Role') {
             steps {
                sh """
                set +x
                TEMPLATE_BODY = "--template-body file://CloudFormationTemplates/IAM.cf.json --region 'ap-southeast-2'--capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM"     
-               sh AWS-CLOUDFORMATION-EC2/create-or-update-stack.sh ap-southeast-2 ec2-Iam-Role "\${TEMPLATE_BODY}"
+               sh AWS-CLOUDFORMATION-EC2/create-or-update-stack.shec2-Iam-Role "\${TEMPLATE_BODY}" ap-southeast-2
                """
             }
         }
