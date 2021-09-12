@@ -16,7 +16,7 @@ pipeline {
             steps {
                sh """
                set +x
-               TEMPLATE_BODY = "--template-body file://CloudFormationTemplates/IAM.cf.json --region 'ap-southeast-2'--capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM"     
+               TEMPLATE_BODY="--template-body file://AWS-CLOUDFORMATION-EC2/CloudFormationTemplates/IAM.cf.json --region 'ap-southeast-2'--capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM"     
                sh AWS-CLOUDFORMATION-EC2/create-or-update-stack.shec2-Iam-Role "\${TEMPLATE_BODY}" ap-southeast-2
                """
             }
