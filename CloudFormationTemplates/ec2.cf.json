@@ -32,7 +32,6 @@
       }
    },
    "Resources": {
-
       "WebServerGroup" : {
          "Type" : "AWS::AutoScaling::AutoScalingGroup",
          "Properties" : {
@@ -48,7 +47,12 @@
       "LaunchConfig" : {
          "Type" : "AWS::AutoScaling::LaunchConfiguration",
          "Properties" : {
-           "ImageId" : {"Ref":"LatestAmiId"},
+           "ImageId" : {
+              "Ref":"LatestAmiId"
+            },
+           "IamInstanceProfile": {
+              "Fn::ImportValue": "IAMProfile"
+            },
            "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
            "InstanceType" : { "Ref" : "InstanceType" }
          }

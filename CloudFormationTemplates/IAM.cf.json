@@ -1,0 +1,84 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Template to launch ec2 instance using cloudformation Stack",
+    "Resources": {
+          "IamRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "ec2.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Path": "/"
+            }
+          },
+            "IamInstanceProfile": {
+              "Type": "AWS::IAM::InstanceProfile",
+              "Properties": {
+                "Path": "/",
+                "Roles": [
+                  {
+                    "Ref": "IamRole"
+                  }
+                ]
+              }
+            },
+        
+          "IamPolicies": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "AWS::StackName"
+                    },
+                    "-instance-policy"
+                  ]
+                ]
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                        "ec2:*",
+                        "elasticloadbalancing:*",
+                        "autoscaling-plans:*",
+                        "autoscaling:*"
+                    ],
+                    "Resource": "*"
+                  }
+                ]
+              },
+              "Roles": [
+                {
+                  "Ref": "IamRole"
+                }
+              ]
+            }
+        }
+ 
+    },
+    "Outputs": {
+     "IAMRole" : {
+       "Description" : "Iam Role of instance",
+       "Value" :  {"Ref":"IamInstanceProfile"},
+       "Export":{
+           "Name": "IAMProfile"
+       }
+       }
+    }
+ }
