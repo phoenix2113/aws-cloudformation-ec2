@@ -9,7 +9,7 @@ pipeline {
     stages("Create ec2 Instance") {
         stage('STEP 1: Create Iam Role') {
             steps {
-            sh "aws cloudformation create-stack --stack-name ec2-Iam-Role --template-body file://CloudFormationTemplates/IAM.cf.json --region 'ap-southeast-2'--capabilities CAPABILITY_NAMED_IAM" 
+            sh "aws cloudformation create-stack --stack-name ec2-Iam-Role --template-body file://CloudFormationTemplates/IAM.cf.json --region 'ap-southeast-2'--capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM" 
             }
         }
 
