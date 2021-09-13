@@ -1,5 +1,3 @@
-// #!/usr/bin/env groovy
-
 pipeline {
     agent any
     parameters {
@@ -31,4 +29,5 @@ pipeline {
             }
         }
     }
+ }
 }
