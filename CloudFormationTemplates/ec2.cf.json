@@ -32,7 +32,75 @@
       }
    },
    "Resources": {
+
+      "IamRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+           "AssumeRolePolicyDocument": {
+             "Statement": [
+               {
+                 "Effect": "Allow",
+                 "Principal": {
+                   "Service": [
+                     "ec2.amazonaws.com"
+                   ]
+                 },
+                 "Action": [
+                   "sts:AssumeRole"
+                 ]
+               }
+             ]
+           },
+           "Path": "/"
+         }
+       },
+         "IamInstanceProfile": {
+           "Type": "AWS::IAM::InstanceProfile",
+           "Properties": {
+             "Path": "/",
+             "Roles": [
+               {
+                 "Ref": "IamRole"
+               }
+             ]
+           }
+         },
      
+       "IamPolicies": {
+         "Type": "AWS::IAM::Policy",
+         "Properties": {
+           "PolicyName": {
+             "Fn::Join": [
+               "",
+               [
+                 {
+                   "Ref": "AWS::StackName"
+                 },
+                 "-instance-policy"
+               ]
+             ]
+           },
+           "PolicyDocument": {
+             "Statement": [
+               {
+                 "Effect": "Allow",
+                 "Action": [
+                     "ec2:*",
+                     "elasticloadbalancing:*",
+                     "autoscaling-plans:*",
+                     "autoscaling:*"
+                 ],
+                 "Resource": "*"
+               }
+             ]
+           },
+           "Roles": [
+             {
+               "Ref": "IamRole"
+             }
+           ]
+         }
+     },
       "WebServerGroup" : {
          "Type" : "AWS::AutoScaling::AutoScalingGroup",
          "Properties" : {
@@ -46,12 +114,15 @@
        },
 
       "LaunchConfig" : {
+         "DependsOn": "IamInstanceProfile",
          "Type" : "AWS::AutoScaling::LaunchConfiguration",
          "Properties" : {
            "ImageId" : {
               "Ref":"LatestAmiId"
             },
-           "IamInstanceProfile": "Iam-role-ec2-launch-IamInstanceProfile-16GOA129OBLYY",
+           "IamInstanceProfile": {
+              "Ref": "IamInstanceProfile"
+            },
            "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
            "InstanceType" : { "Ref" : "InstanceType" }
          }
