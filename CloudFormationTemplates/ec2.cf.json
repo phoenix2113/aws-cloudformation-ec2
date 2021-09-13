@@ -46,7 +46,6 @@
        },
 
       "LaunchConfig" : {
-         "DependsOn": "IamInstanceProfile",
          "Type" : "AWS::AutoScaling::LaunchConfiguration",
          "Properties" : {
            "ImageId" : {
