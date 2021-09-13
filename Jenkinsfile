@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     parameters {
@@ -24,7 +25,9 @@ pipeline {
 
         stage('STEP 1: Launch EC2') {
             steps {
-            sh "aws cloudformation create-stack --stack-name ec2-jenkins-jobs --template-body file://CloudFormationTemplates/ec2.cf.json --region 'ap-southeast-2' --parameters ParameterKey=VpcId,ParameterValue=${VPC_ID} ParameterKey=InstanceType,ParameterValue=${INSTANCE_TYPE}" 
+                withAWS(credentials: 'awsID', region: 'ap-southeast-2'){
+            sh "aws cloudformation create-stack --stack-name ec2-jenkins-jobs --template-body file://CloudFormationTemplates/ec2.cf.json --region 'ap-southeast-2' --capabilities CAPABILITY_IAM --parameters ParameterKey=VpcId,ParameterValue=${VPC_ID} ParameterKey=InstanceType,ParameterValue=${INSTANCE_TYPE}" 
+            }
         }
     }
  }
